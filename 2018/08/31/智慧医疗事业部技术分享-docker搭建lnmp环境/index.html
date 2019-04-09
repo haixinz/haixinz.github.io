@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.0',
+    sidebar: {"position":"right","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="0x01. Docker是什么 Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。 —摘自百度知道。   Docker 是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、 ba">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智慧医疗事业部技术分享-docker搭建lnmp环境">
+<meta property="og:url" content="http://yoursite.com/2018/08/31/智慧医疗事业部技术分享-docker搭建lnmp环境/index.html">
+<meta property="og:site_name" content="blackpink">
+<meta property="og:description" content="0x01. Docker是什么 Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。 —摘自百度知道。   Docker 是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、 ba">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-02T00:57:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="智慧医疗事业部技术分享-docker搭建lnmp环境">
+<meta name="twitter:description" content="0x01. Docker是什么 Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。 —摘自百度知道。   Docker 是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、 ba">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2018/08/31/智慧医疗事业部技术分享-docker搭建lnmp环境/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>智慧医疗事业部技术分享-docker搭建lnmp环境 | blackpink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">blackpink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">唉.....</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/31/智慧医疗事业部技术分享-docker搭建lnmp环境/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="haixin.z">
+      <meta itemprop="description" content="胜利即是正义">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blackpink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">智慧医疗事业部技术分享-docker搭建lnmp环境
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-31 09:44:32" itemprop="dateCreated datePublished" datetime="2018-08-31T09:44:32+00:00">2018-08-31</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-02 00:57:10" itemprop="dateModified" datetime="2019-04-02T00:57:10+00:00">2019-04-02</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="0x01-Docker是什么"><a href="#0x01-Docker是什么" class="headerlink" title="0x01. Docker是什么"></a>0x01. Docker是什么</h3><blockquote>
+<p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。 —摘自百度知道。</p>
+</blockquote>
+<blockquote>
+<p>Docker 是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、 bare metal、OpenStack 集群和其他的基础应用平台。 – 摘自 Docker 中文社区。</p>
+</blockquote>
+<h3 id="0x02-Docker-能干什么-为什么用-Docker"><a href="#0x02-Docker-能干什么-为什么用-Docker" class="headerlink" title="0x02. Docker 能干什么,为什么用 Docker"></a>0x02. Docker 能干什么,为什么用 Docker</h3><ul>
+<li><p>1、环境配置的难题</p>
+<p>  软件开发最大的麻烦事之一，就是环境配置。用户计算机的环境都不相同，你怎么知道自家的软件，能在那些机器跑起来？因此，用户必须保证两件事：操作系统的设置，各种库和组件的安装。只有它们都正确，软件才能运行。举例来说，编译安装一套LNMP环境，计算机必须先安装各种库，各种依赖，可能还要配置环境变量。各个软件之间还需要协同工作。这已经不是易事，配置一台环境就如此麻烦，换一台机器，就要重来一次，旷日费时。然而我们经常会遇到的情况是多人协同开发。每个人的环境各不相同，本地环境与生产环境也不相同。很多人想到，能不能从根本上解决问题，软件可以带环境安装？也就是说，安装的时候，把原始环境一模一样地复制过来。</p>
+</li>
+<li><p>2、虚拟机</p>
+<p>  虚拟机（virtual machine）就是带环境安装的一种解决方案。它可以在一种操作系统里面运行另一种操作系统，比如在 Windows 系统里面运行 Linux 系统。应用程序对此毫无感知，因为虚拟机看上去跟真实系统一模一样，而对于底层系统来说，虚拟机就是一个普通文件，不需要了就删掉，对其他部分毫无影响。虽然用户可以通过虚拟机还原软件的原始环境。但是，这个方案有几个缺点。</p>
+<ul>
+<li><p>资源占用多</p>
+<p>虚拟机会独占一部分内存和硬盘空间。它运行的时候，其他程序就不能使用这些资源了。哪怕虚拟机里面的应用程序，真正使用的内存只有 1MB，虚拟机依然需要几百 MB 的内存才能运行。</p>
+</li>
+<li><p>冗余步骤多</p>
+<p>虚拟机是完整的操作系统，一些系统级别的操作步骤，往往无法跳过，比如用户登录。</p>
+</li>
+<li><p>启动慢</p>
+<p>启动操作系统需要多久，启动虚拟机就需要多久。可能要等几分钟，应用程序才能真正运行。</p>
+</li>
+</ul>
+</li>
+<li><p>3、Docker</p>
+<p>  Docker 属于 Linux 容器的一种封装，提供简单易用的容器使用接口。它是目前最流行的 Linux 容器解决方案。</p>
+<p>  Docker 将应用程序与该程序的依赖，打包在一个文件里面。运行这个文件，就会生成一个虚拟容器。程序在这个虚拟容器里运行，就好像在真实的物理机上运行一样。有了 Docker，就不用担心环境问题。</p>
+<p>  总体来说，Docker 的接口相当简单，用户可以方便地创建和使用容器，把自己的应用放入容器。容器还可以进行版本管理、复制、分享、修改，就像管理普通的代码一样。</p>
+</li>
+<li><p>4、总结一下 Docker 的用途</p>
+<p>  （1）提供一次性的环境。比如，本地测试他人的软件、持续集成的时候提供单元测试和构建的环境。</p>
+<p>  （2）提供弹性的云服务。因为 Docker 容器可以随开随关，很适合动态扩容和缩容。</p>
+<p>  （3）组建微服务架构。通过多个容器，一台机器可以跑多个服务，因此在本机就可以模拟出微服务架构。</p>
+<p> 时至今日，docker的生态已经非常繁荣，越来越多的软件都支持docker部署，现在在服务器中安装一个软件，我们可以无脑在dockerHub中搜索镜像，仅仅需要几个命令，就可以安装，运行，并且无需为兼容性而担忧。而且随着云计算，微服务，PAAS这些名词的火热，以docker为代表的虚拟化技术已经成为互联网领域不可或缺的技术栈，还是值得深入研究一下的。</p>
+</li>
+</ul>
+<h3 id="0x03-多说无益，下面我们从零搭建一套Docker下的LNMP环境"><a href="#0x03-多说无益，下面我们从零搭建一套Docker下的LNMP环境" class="headerlink" title="0x03. 多说无益，下面我们从零搭建一套Docker下的LNMP环境"></a>0x03. 多说无益，下面我们从零搭建一套Docker下的LNMP环境</h3><p>宿主机:ubuntu 16.04 server </p>
+<p>Docker版本：</p>
+<h4 id="更改源信息"><a href="#更改源信息" class="headerlink" title="更改源信息"></a>更改源信息</h4><p>全新安装的ubuntu，默认软件下载是从国外，由于你懂的原因，访问龟速，偶尔被墙，我们首先换成国内的源。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/apt </span><br><span class="line"><span class="comment"># 源信息都配置在sources.list 文件中，我们先备份此文件</span></span><br><span class="line">sudo cp sources.list sources.list.bak </span><br><span class="line"><span class="comment"># 打开sources.list</span></span><br><span class="line">vi sources.list</span><br></pre></td></tr></table></figure>
+<p>删除原有信息，将下面的源信息粘贴到sources.list中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+<p>更新源<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line">命中:1 http://mirrors.aliyun.com/ubuntu xenial InRelease</span><br><span class="line">命中:2 http://mirrors.aliyun.com/ubuntu xenial-updates InRelease        </span><br><span class="line">命中:3 http://mirrors.aliyun.com/ubuntu xenial-backports InRelease      </span><br><span class="line">命中:4 http://mirrors.aliyun.com/ubuntu xenial-security InRelease        </span><br><span class="line">正在读取软件包列表... 完成</span><br></pre></td></tr></table></figure></p>
+<p>测试一下，国内的源下载速度应该是比较快的<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#安装一个vim编辑器，默认server版本没有预装</span></span><br><span class="line">sudo apt-get install vim</span><br></pre></td></tr></table></figure></p>
+<h4 id="设置root登录"><a href="#设置root登录" class="headerlink" title="设置root登录"></a>设置root登录</h4><p>ubuntu 默认禁止root用户登录，由于我们是自己用来学习的虚拟机，不涉及到安全问题，用root登录方便很多。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#仅需要给root账户设置一个密码。</span></span><br><span class="line">sudo passwd root </span><br><span class="line"><span class="comment">#输入两次密码后，reboot 重启系统。</span></span><br><span class="line"><span class="comment">#这次使用root登录，密码填写设置过的root密码。</span></span><br></pre></td></tr></table></figure>
+<h4 id="配置ssh远程访问并且允许root账号登录"><a href="#配置ssh远程访问并且允许root账号登录" class="headerlink" title="配置ssh远程访问并且允许root账号登录"></a>配置ssh远程访问并且允许root账号登录</h4><p>由于是在windows下通过虚拟机来演示docker的安装，直接在虚拟机上操作shell不太友好。所以先配置一下远程登录，用xShell工具登录操作服务器。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先安装ssh服务端程序</span></span><br><span class="line">apt-get install openssh-server</span><br><span class="line"><span class="comment">#修改配置文件，允许root用户远程登录</span></span><br><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<p>找到下面的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Authentication:</span><br><span class="line">LoginGraceTime 120</span><br><span class="line">PermitRootLogin prohibit-password</span><br><span class="line">StrictModes yes</span><br></pre></td></tr></table></figure></p>
+<p>更改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Authentication:</span><br><span class="line">LoginGraceTime 120</span><br><span class="line">#PermitRootLogin prohibit-password</span><br><span class="line">PermitRootLogin yes</span><br><span class="line">StrictModes yes</span><br></pre></td></tr></table></figure></p>
+<p>重启ssh<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh restart</span><br></pre></td></tr></table></figure></p>
+<p>之后就可以用xShell远程登录服务器了，还可以用xFTP操作文件。准备工作完成。</p>
+<h4 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#由于apt官方库里的docker版本可能比较旧，所以先卸载可能存在的旧版本：</span></span><br><span class="line">apt-get remove docker docker-engine docker-ce docker.io</span><br><span class="line"></span><br><span class="line"><span class="comment">#更新源</span></span><br><span class="line">apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装以下包以使apt可以通过HTTPS使用存储库（repository）：</span></span><br><span class="line">apt-get install -y apt-transport-https ca-certificates curl software-properties-common</span><br><span class="line"></span><br><span class="line"><span class="comment">#添加Docker官方的GPG密钥：</span></span><br><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">使用下面的命令来设置stable存储库：</span><br><span class="line">add-apt-repository <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu <span class="variable">$(lsb_release -cs)</span> stable"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#再更新一下apt包索引：</span></span><br><span class="line">apt-get update</span><br><span class="line"></span><br><span class="line">安装最新版本的Docker CE：</span><br><span class="line">apt-get install -y docker-ce</span><br></pre></td></tr></table></figure>
+<p>在生产系统上，可能会需要应该安装一个特定版本的Docker CE，而不是总是使用最新版本：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#列出可用的版本：</span></span><br><span class="line">apt-cache madison docker-ce</span><br><span class="line"></span><br><span class="line"><span class="comment">#选择要安装的特定版本，第二列是版本字符串，第三列是存储库名称，它指示包来自哪个存储库，以及扩展它的稳定性级别。要安装一个特定的版本，将版本字符串附加到包名中，并通过等号(=)分隔它们：</span></span><br><span class="line">apt-get install docker-ce=&lt;VERSION&gt;</span><br></pre></td></tr></table></figure></p>
+<p>至此。docker已经安装完毕。我们来验证一下，证明全栈helloWord工程师又学会了一门新的技术。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">docker run hello-world</span><br><span class="line"></span><br><span class="line"><span class="comment">##输出的信息</span></span><br><span class="line">Unable to find image <span class="string">'hello-world:latest'</span> locally</span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">d1725b59e92d: Pull complete </span><br><span class="line">Digest: sha256:0add3ace90ecb4adbf7777e9aacf18357296e799f81cabc9fde470971e499788</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> hello-world:latest</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br></pre></td></tr></table></figure>
+<p>hello-world是官方提供的测试镜像。在运行该命令时，docker将会做如下操作：首先检测本地是否有一个叫hello-world的镜像文件，如果没有，则从docker-hub(类似与github的的管理仓库)上查找名为hello-world的镜像，若存在则下载到本地，若不存在，则返回找不到镜像的错误。拿到镜像之后使用它创造一个容器（container）,然后运行容器，得到结果，docker容器的特性是如果该容器运行的镜像中没有可执行的服务，则使用后会立刻关闭该容器。</p>
+<h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><p>终于来到了此次的重点，但是在安装之前还是有一些工作要做</p>
+<ul>
+<li><p>添加镜像加速</p>
+<p>   国内访问 Docker Hub 有时会遇到困难，此时可以配置镜像加速器。国内很多云服务商都提供了加速器服务，我们这次用阿里云举例，注册用户并且申请加速器，会获得如 “<a href="https://t13n67zy.mirror.aliyuncs.com”" target="_blank" rel="noopener">https://t13n67zy.mirror.aliyuncs.com”</a> 这样的地址。我们需要将其配置到Docker引擎。</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#编辑docker.service 文件</span></span><br><span class="line">vim  /etc/systemd/system/multi-user.target.wants/docker.service</span><br><span class="line"><span class="comment">#找到 ExecStart= 这一行，在这行最后添加加速器地址 --registry-mirror=&lt;加速器地址&gt; </span></span><br><span class="line"></span><br><span class="line"><span class="comment">#加完以后看起来是这样的：ExecStart=/usr/bin/dockerd --registry-mirror=https://t13n67zy.mirror.aliyuncs.com</span></span><br></pre></td></tr></table></figure>
+<p>   重新加载配置</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#重新加载配置</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line"></span><br><span class="line"><span class="comment">#重新启动Docker</span></span><br><span class="line">systemctl restart docker</span><br><span class="line"></span><br><span class="line"><span class="comment">#设置Docker开机启动</span></span><br><span class="line">systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure>
+<p>   验证加速器是否有效</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看docker进程</span></span><br><span class="line">ps -ef  | grep dockerd</span><br><span class="line"><span class="comment">#如果从结果中看到了配置的 --registry-mirror 参数说明配置成功。</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>安装docker-compose</p>
+<p>  docker-compose 是一个软件，用来管理多个容器的docker，使他们能协同运行，只需要配置一个yaml文件，然后只需要一个简单的docker-compose up 命令，就可以运行所有的docker容器，我们先来安装。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install docker-compose</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h4><p>我们知道lnmp作为phper常用的开发环境，代表的是linux nginx mysql php 这个组合，我们可以把这样一套环境打包进一个镜像中，这个称之为fat container ，我们是不建议这么做的。我们倾向于将nginx mysql php 作为三个独立的容器运行，这样做的好处是：1，每个容器的体积都很小。相对独立运行便于修改，排错。2，快速/简单的发布 —— 因为镜像非常小，可以更快地下载镜像，也可以更快地发布到不同的机器。3，提高安全性 —— 更少的代码和程序在容器中意味着更小的攻击面。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/29/php实现守护进程/" rel="next" title="php实现守护进程">
+                <i class="fa fa-chevron-left"></i> php实现守护进程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/01/win10 ubuntu虚拟机 docker  php开发环境搭建/" rel="prev" title="win10 -> ubuntu虚拟机->docker  php开发环境搭建">
+                win10 -> ubuntu虚拟机->docker  php开发环境搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">haixin.z</p>
+              <div class="site-description motion-element" itemprop="description">胜利即是正义</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01-Docker是什么"><span class="nav-number">1.</span> <span class="nav-text">0x01. Docker是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02-Docker-能干什么-为什么用-Docker"><span class="nav-number">2.</span> <span class="nav-text">0x02. Docker 能干什么,为什么用 Docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03-多说无益，下面我们从零搭建一套Docker下的LNMP环境"><span class="nav-number">3.</span> <span class="nav-text">0x03. 多说无益，下面我们从零搭建一套Docker下的LNMP环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#更改源信息"><span class="nav-number">3.1.</span> <span class="nav-text">更改源信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#设置root登录"><span class="nav-number">3.2.</span> <span class="nav-text">设置root登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置ssh远程访问并且允许root账号登录"><span class="nav-number">3.3.</span> <span class="nav-text">配置ssh远程访问并且允许root账号登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Docker"><span class="nav-number">3.4.</span> <span class="nav-text">安装Docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#准备工作"><span class="nav-number">3.5.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建环境"><span class="nav-number">3.6.</span> <span class="nav-text">搭建环境</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">haixin.z</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

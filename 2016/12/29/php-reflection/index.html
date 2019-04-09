@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.0',
+    sidebar: {"position":"right","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="反射介绍PHP 反射机制，对类、接口、函数、方法和扩展进行反向工程的能力。分析类，接口，函数和方法的内部结构，方法和函数的参数，以及类的属性和方法。 反射中常用的几个类：  ReflectionClass 解析类 ReflectionProperty 类的属性的相关信息 ReflectionMethod 类方法的有关信息 ReflectionParameter 取回了函数或方法参数的相关信息 Re">
+<meta name="keywords" content="php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP反射">
+<meta property="og:url" content="http://yoursite.com/2016/12/29/php-reflection/index.html">
+<meta property="og:site_name" content="blackpink">
+<meta property="og:description" content="反射介绍PHP 反射机制，对类、接口、函数、方法和扩展进行反向工程的能力。分析类，接口，函数和方法的内部结构，方法和函数的参数，以及类的属性和方法。 反射中常用的几个类：  ReflectionClass 解析类 ReflectionProperty 类的属性的相关信息 ReflectionMethod 类方法的有关信息 ReflectionParameter 取回了函数或方法参数的相关信息 Re">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-02T00:57:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP反射">
+<meta name="twitter:description" content="反射介绍PHP 反射机制，对类、接口、函数、方法和扩展进行反向工程的能力。分析类，接口，函数和方法的内部结构，方法和函数的参数，以及类的属性和方法。 反射中常用的几个类：  ReflectionClass 解析类 ReflectionProperty 类的属性的相关信息 ReflectionMethod 类方法的有关信息 ReflectionParameter 取回了函数或方法参数的相关信息 Re">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2016/12/29/php-reflection/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP反射 | blackpink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">blackpink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">唉.....</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/29/php-reflection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="haixin.z">
+      <meta itemprop="description" content="胜利即是正义">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blackpink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP反射
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-12-29 09:44:32" itemprop="dateCreated datePublished" datetime="2016-12-29T09:44:32+00:00">2016-12-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-02 00:57:10" itemprop="dateModified" datetime="2019-04-02T00:57:10+00:00">2019-04-02</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="反射介绍"><a href="#反射介绍" class="headerlink" title="反射介绍"></a>反射介绍</h2><p>PHP 反射机制，对类、接口、函数、方法和扩展进行反向工程的能力。<br>分析类，接口，函数和方法的内部结构，方法和函数的参数，以及类的属性和方法。</p>
+<p>反射中常用的几个类：</p>
+<ul>
+<li>ReflectionClass 解析类</li>
+<li>ReflectionProperty 类的属性的相关信息</li>
+<li>ReflectionMethod 类方法的有关信息</li>
+<li>ReflectionParameter 取回了函数或方法参数的相关信息</li>
+<li>ReflectionFunction 一个函数的相关信息</li>
+</ul>
+<p>分析类：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $id;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">const</span> MAX_AGE = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> $likes = [];</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($id, $name = <span class="string">'li'</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;id = $id;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">study</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'learning...'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">_foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'foo'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">bar</span><span class="params">($to, $from = <span class="string">'zh'</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'bar'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="ReflectionClass"><a href="#ReflectionClass" class="headerlink" title="ReflectionClass"></a>ReflectionClass</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">$ref = <span class="keyword">new</span> ReflectionClass(<span class="string">'Student'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断类是否可实例化</span></span><br><span class="line"><span class="keyword">if</span> ($ref-&gt;isInstantiable()) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'可实例化'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取类构造函数</span></span><br><span class="line"><span class="comment">// 有返回 ReflectionMethod 对象，没有返回 NULL</span></span><br><span class="line">$constructor = $ref-&gt;getConstructor();</span><br><span class="line">print_r($constructor);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取某个属性</span></span><br><span class="line"><span class="keyword">if</span> ($ref-&gt;hasProperty(<span class="string">'id'</span>)) &#123;</span><br><span class="line">    $attr = $ref-&gt;getProperty(<span class="string">'id'</span>);</span><br><span class="line">    print_r($attr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取属性列表</span></span><br><span class="line">$attributes = $ref-&gt;getProperties();</span><br><span class="line"><span class="keyword">foreach</span> ($attributes <span class="keyword">as</span> $row) &#123;</span><br><span class="line">    <span class="comment">// 这里的 $row 为 ReflectionProperty 的实例</span></span><br><span class="line">    <span class="keyword">echo</span> $row-&gt;getName() , <span class="string">"\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取静态属性，返回数组</span></span><br><span class="line">$static = $ref-&gt;getStaticProperties();</span><br><span class="line">print_r($static);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取某个常量</span></span><br><span class="line"><span class="keyword">if</span> ($ref-&gt;hasConstant(<span class="string">'MAX_AGE'</span>)) &#123;</span><br><span class="line">    $const = $ref-&gt;getConstant(<span class="string">'MAX_AGE'</span>);</span><br><span class="line">    <span class="keyword">echo</span> $const;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取常量，返回数组</span></span><br><span class="line">$constants = $ref-&gt;getConstants();</span><br><span class="line">print_r($constants);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取某个方法</span></span><br><span class="line"><span class="keyword">if</span> ($ref-&gt;hasMethod(<span class="string">'bar'</span>)) &#123;</span><br><span class="line">    $method = $ref-&gt;getMethod(<span class="string">'bar'</span>);</span><br><span class="line">    print_r($method);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取方法列表</span></span><br><span class="line">$methods = $ref-&gt;getMethods();</span><br><span class="line"><span class="keyword">foreach</span> ($methods <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">    <span class="comment">// 这里的 $row 为 ReflectionMethod 的实例</span></span><br><span class="line">    <span class="keyword">echo</span> $value-&gt;getName() . <span class="string">"\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ReflectionProperty"><a href="#ReflectionProperty" class="headerlink" title="ReflectionProperty"></a>ReflectionProperty</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ($ref-&gt;hasProperty(<span class="string">'name'</span>)) &#123;</span><br><span class="line">    $attr = $ref-&gt;getProperty(<span class="string">'name'</span>);</span><br><span class="line">    <span class="comment">// 属性名称</span></span><br><span class="line">    <span class="keyword">echo</span> $attr-&gt;getName();</span><br><span class="line">    <span class="comment">// 类定义时属性为真，运行时添加的属性为假</span></span><br><span class="line">    var_dump($attr-&gt;isDefault());</span><br><span class="line">    <span class="comment">// 判断属性访问权限</span></span><br><span class="line">    var_dump($attr-&gt;isPrivate());</span><br><span class="line">    var_dump($attr-&gt;isProtected());</span><br><span class="line">    var_dump($attr-&gt;isPublic());</span><br><span class="line">    <span class="comment">// 判断属性是否为静态</span></span><br><span class="line">    var_dump($attr-&gt;isStatic());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="RefleactionMethod-amp-ReflectionParameter"><a href="#RefleactionMethod-amp-ReflectionParameter" class="headerlink" title="RefleactionMethod &amp; ReflectionParameter"></a>RefleactionMethod &amp; ReflectionParameter</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ($ref-&gt;hasMethod(<span class="string">'bar'</span>)) &#123;</span><br><span class="line">    $method = $ref-&gt;getMethod(<span class="string">'bar'</span>);</span><br><span class="line">    <span class="keyword">echo</span> $method-&gt;getName();</span><br><span class="line">    <span class="comment">//isAbstract 判断是否是抽象方法</span></span><br><span class="line">    <span class="comment">//isConstructor 判断是否是构造方法</span></span><br><span class="line">    <span class="comment">//isDestructor 判断是否是析构方法</span></span><br><span class="line">    <span class="comment">//isFinal 判断是否是 final 描述的方法</span></span><br><span class="line">    <span class="comment">//isPrivate 判断是否是 private 描述的方法</span></span><br><span class="line">    <span class="comment">//isProtected 判断是否是 protected 描述的方法</span></span><br><span class="line">    <span class="comment">//isPublic 判断是否是 public 描述的方法</span></span><br><span class="line">    <span class="comment">//isStatic 判断是否是 static 描述的方法</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取参数列表</span></span><br><span class="line">    $parameters = $method-&gt;getParameters();</span><br><span class="line">    <span class="keyword">foreach</span> ($parameters <span class="keyword">as</span> $row) &#123;</span><br><span class="line">        <span class="comment">// 这里的 $row 为 ReflectionParameter 实例</span></span><br><span class="line">        <span class="keyword">echo</span> $row-&gt;getName();</span><br><span class="line">        <span class="keyword">echo</span> $row-&gt;getClass();</span><br><span class="line">        <span class="comment">// 检查变量是否有默认值</span></span><br><span class="line">        <span class="keyword">if</span> ($row-&gt;isDefaultValueAvailable()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> $row-&gt;getDefaultValue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取变量类型</span></span><br><span class="line">        <span class="keyword">if</span> ($row-&gt;hasType()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> $row-&gt;getType();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="eflectionFunction-amp-ReflectionParameter"><a href="#eflectionFunction-amp-ReflectionParameter" class="headerlink" title="eflectionFunction &amp; ReflectionParameter"></a>eflectionFunction &amp; ReflectionParameter</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$fun = <span class="keyword">new</span> ReflectionFunction(<span class="string">'demo'</span>);</span><br><span class="line"><span class="keyword">echo</span> $fun-&gt;getName();</span><br><span class="line">$parameters = $fun-&gt;getParameters();</span><br><span class="line"><span class="keyword">foreach</span> ($parameters <span class="keyword">as</span> $row) &#123;</span><br><span class="line">    <span class="comment">// 这里的 $row 为 ReflectionParameter 实例</span></span><br><span class="line">    <span class="keyword">echo</span> $row-&gt;getName();</span><br><span class="line">    <span class="keyword">echo</span> $row-&gt;getClass();</span><br><span class="line">    <span class="comment">// 检查变量是否有默认值</span></span><br><span class="line">    <span class="keyword">if</span> ($row-&gt;isDefaultValueAvailable()) &#123;</span><br><span class="line">        <span class="keyword">echo</span> $row-&gt;getDefaultValue();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取变量类型</span></span><br><span class="line">    <span class="keyword">if</span> ($row-&gt;hasType()) &#123;</span><br><span class="line">        <span class="keyword">echo</span> $row-&gt;getType();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="综合实例"><a href="#综合实例" class="headerlink" title="综合实例"></a>综合实例</h2><p>下面用一个简单的示例：如果用反射实例化类。</p>
+<p>file: Student.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $id;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($id, $name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;id = $id;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">study</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'learning.....'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一般情况下，实例化类的时候，直接使用 new，但是我们现在不用这种方法，我们使用反射来实现。<br>file: index.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'student.php'</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">make</span><span class="params">($class, $vars = [])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $ref = <span class="keyword">new</span> ReflectionClass($class);</span><br><span class="line">    <span class="comment">// 检查类 Student 是否可实例化</span></span><br><span class="line">    <span class="keyword">if</span> ($ref-&gt;isInstantiable()) &#123;</span><br><span class="line">        <span class="comment">// 获取构造函数</span></span><br><span class="line">        $constructor = $ref-&gt;getConstructor();</span><br><span class="line">        <span class="comment">// 没有构造函数的话，直接实例化</span></span><br><span class="line">        <span class="keyword">if</span> (is_null($constructor)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> $class;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取构造函数参数</span></span><br><span class="line">        $params = $constructor-&gt;getParameters();</span><br><span class="line">        $resolveParams = [];</span><br><span class="line">        <span class="keyword">foreach</span> ($params <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">            $name = $value-&gt;getName();</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">isset</span>($vars[$name])) &#123;</span><br><span class="line">                <span class="comment">// 判断如果是传递的参数，直接使用传递参数</span></span><br><span class="line">                $resolveParams[] = $vars[$name];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 没有传递参数的话，检查是否有默认值，没有默认值的话，按照类名进行递归解析</span></span><br><span class="line">                $default = $value-&gt;isDefaultValueAvailable() ? $value-&gt;getDefaultValue() : <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (is_null($default)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> ($value-&gt;getClass()) &#123;</span><br><span class="line">                        $resolveParams[] = make($value-&gt;getClass()-&gt;name, $vars);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"&#123;$name&#125; 没有传值且没有默认值"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    $resolveParams[] = $default;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 根据参数实例化</span></span><br><span class="line">        <span class="keyword">return</span> $ref-&gt;newInstanceArgs($resolveParams);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"类 &#123;$class&#125; 不存在!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="情况一"><a href="#情况一" class="headerlink" title="情况一"></a>情况一</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $stu = make(<span class="string">'Student'</span>, [<span class="string">'id'</span> =&gt; <span class="number">1</span>]);</span><br><span class="line">    print_r($stu);</span><br><span class="line">    $stu-&gt;study();</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="情况二"><a href="#情况二" class="headerlink" title="情况二"></a>情况二</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $stu = make(<span class="string">'Student'</span>, [<span class="string">'id'</span> =&gt; <span class="number">1</span>, <span class="string">'name'</span> =&gt; <span class="string">'li'</span>]);</span><br><span class="line">    print_r($stu);</span><br><span class="line">    $stu-&gt;study();</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面两种情况很明显第一种，缺少参数 name，无法实例化成功，第二种情况就可以实例化成功。</p>
+<p>那么我们如果将类 Student 的构造函数修改为:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($id, $name = <span class="string">'zhang'</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;id = $id;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样设置 name 有默认值的情况下，那么第一种情况也可以实例化成功。</p>
+<h3 id="情况三"><a href="#情况三" class="headerlink" title="情况三"></a>情况三</h3><p>如果在类的构造函数中有其他类为参数的情况下，那么也可以解析：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($id, $name, Study $study)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;id = $id;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;study = $study;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么这种情况下，在分析类的构造函数参数的时候，如果没有传递参数的话，就会递归调用 make 方法处理 Study 类，如果类存在的话，实例化。</p>
+<p>file: study.php<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 我们这里不写构造函数，测试下没有构造函数的情况</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Study</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'show'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>将 Student 类的方法 study 修改为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">study</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;name . <span class="string">' '</span> . <span class="keyword">$this</span>-&gt;study-&gt;show();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面测试：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $stu = make(<span class="string">'Student'</span>, [<span class="string">'id'</span> =&gt; <span class="number">1</span>]);</span><br><span class="line">    print_r($stu);</span><br><span class="line">    $stu-&gt;study();</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="PHP反射实际应用"><a href="#PHP反射实际应用" class="headerlink" title="PHP反射实际应用"></a>PHP反射实际应用</h2><ul>
+<li>自动生成文档</li>
+<li>实现 MVC 架构</li>
+<li>实现单元测试</li>
+<li>配合 DI 容器解决依赖</li>
+</ul>
+<h3 id="自动生成文档"><a href="#自动生成文档" class="headerlink" title="自动生成文档"></a>自动生成文档</h3><p>根据反射的分析类，接口，函数和方法的内部结构，方法和函数的参数，以及类的属性和方法，可以自动生成文档。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 学生类</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 描述信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> NORMAL = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">const</span> FORBIDDEN = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户ID</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> 类型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> $id;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> int</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getId</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;id;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setId</span><span class="params">($id = <span class="number">1</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;id = $id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ref = <span class="keyword">new</span> ReflectionClass(<span class="string">'Student'</span>);</span><br><span class="line">$doc = $ref-&gt;getDocComment();</span><br><span class="line"><span class="keyword">echo</span> $ref-&gt;getName() . <span class="string">':'</span> . getComment($ref) , <span class="string">"\n"</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"属性列表：\n"</span>;</span><br><span class="line">printf(<span class="string">"%-15s%-10s%-40s\n"</span>, <span class="string">'Name'</span>, <span class="string">'Access'</span>, <span class="string">'Comment'</span>);</span><br><span class="line">$attr = $ref-&gt;getProperties();</span><br><span class="line"><span class="keyword">foreach</span> ($attr <span class="keyword">as</span> $row) &#123;</span><br><span class="line">    printf(<span class="string">"%-15s%-10s%-40s\n"</span>, $row-&gt;getName(), getAccess($row), getComment($row));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"常量列表：\n"</span>;</span><br><span class="line">printf(<span class="string">"%-15s%-10s\n"</span>, <span class="string">'Name'</span>, <span class="string">'Value'</span>);</span><br><span class="line">$const = $ref-&gt;getConstants();</span><br><span class="line"><span class="keyword">foreach</span> ($const <span class="keyword">as</span> $key =&gt; $val) &#123;</span><br><span class="line">    printf(<span class="string">"%-15s%-10s\n"</span>, $key, $val);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"\n\n"</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"方法列表\n"</span>;</span><br><span class="line">printf(<span class="string">"%-15s%-10s%-30s%-40s\n"</span>, <span class="string">'Name'</span>, <span class="string">'Access'</span>, <span class="string">'Params'</span>, <span class="string">'Comment'</span>);</span><br><span class="line">$methods = $ref-&gt;getMethods();</span><br><span class="line"><span class="keyword">foreach</span> ($methods <span class="keyword">as</span> $row) &#123;</span><br><span class="line">    printf(<span class="string">"%-15s%-10s%-30s%-40s\n"</span>, $row-&gt;getName(), getAccess($row), getParams($row), getComment($row));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 获取权限</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getAccess</span><span class="params">($method)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ($method-&gt;isPublic()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Public'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($method-&gt;isProtected()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Protected'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($method-&gt;isPrivate()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Private'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 获取方法参数信息</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getParams</span><span class="params">($method)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $str = <span class="string">''</span>;</span><br><span class="line">    $parameters = $method-&gt;getParameters();</span><br><span class="line">    <span class="keyword">foreach</span> ($parameters <span class="keyword">as</span> $row) &#123;</span><br><span class="line">        $str .= $row-&gt;getName() . <span class="string">','</span>;</span><br><span class="line">        <span class="keyword">if</span> ($row-&gt;isDefaultValueAvailable()) &#123;</span><br><span class="line">            $str .= <span class="string">"Default: &#123;$row-&gt;getDefaultValue()&#125;"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $str ? $str : <span class="string">''</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 获取注释</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getComment</span><span class="params">($var)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $comment = $var-&gt;getDocComment();</span><br><span class="line">    <span class="comment">// 简单的获取了第一行的信息，这里可以自行扩展</span></span><br><span class="line">    preg_match(<span class="string">'/\* (.*) *?/'</span>, $comment, $res);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">isset</span>($res[<span class="number">1</span>]) ? $res[<span class="number">1</span>] : <span class="string">''</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行 php file.php 就可以看到相应的文档信息。</p>
+<h3 id="实现-MVC-架构"><a href="#实现-MVC-架构" class="headerlink" title="实现 MVC 架构"></a>实现 MVC 架构</h3><p>现在好多框架都是 MVC 的架构，根据路由信息定位 控制器($controller) 和方法($method) 的名称，之后使用反射实现自动调用。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$class = <span class="keyword">new</span> ReflectionClass(ucfirst($controller) . <span class="string">'Controller'</span>);</span><br><span class="line">$controller = $class-&gt;newInstance();</span><br><span class="line"><span class="keyword">if</span> ($class-&gt;hasMethod($method)) &#123;</span><br><span class="line">    $method = $class-&gt;getMethod($method);</span><br><span class="line">    $method-&gt;invokeArgs($controller, $arguments);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"&#123;$controller&#125; controller method &#123;$method&#125; not exists!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实现单元测试"><a href="#实现单元测试" class="headerlink" title="实现单元测试"></a>实现单元测试</h3><p>一般情况下我们会对函数和类进行测试，判断其是否能够按我们预期返回结果，我们可以用反射实现一个简单通用的类测试用例。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calc</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">plus</span><span class="params">($a, $b)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> $a + $b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">minus</span><span class="params">($a, $b)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> $a - $b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">testEqual</span><span class="params">($method, $assert, $data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $arr = explode(<span class="string">'@'</span>, $method);</span><br><span class="line">    $class = $arr[<span class="number">0</span>];</span><br><span class="line">    $method = $arr[<span class="number">1</span>];</span><br><span class="line">    $ref = <span class="keyword">new</span> ReflectionClass($class);</span><br><span class="line">    <span class="keyword">if</span> ($ref-&gt;hasMethod($method)) &#123;</span><br><span class="line">        $method = $ref-&gt;getMethod($method);</span><br><span class="line">        $res = $method-&gt;invokeArgs(<span class="keyword">new</span> $class, $data);</span><br><span class="line">        var_dump($res === $assert);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">testEqual(<span class="string">'Calc@plus'</span>, <span class="number">3</span>, [<span class="number">1</span>, <span class="number">2</span>]);</span><br><span class="line">testEqual(<span class="string">'Calc@minus'</span>, <span class="number">-1</span>, [<span class="number">1</span>, <span class="number">2</span>]);</span><br></pre></td></tr></table></figure></p>
+<p>这是类的测试方法，也可以利用反射实现函数的测试方法。<br>这里只是我简单写的一个测试用例，PHPUnit 单元测试框架很大程度上依赖了 Reflection 的特性，可以了解下。</p>
+<h3 id="配合-DI-容器解决依赖"><a href="#配合-DI-容器解决依赖" class="headerlink" title="配合 DI 容器解决依赖"></a>配合 DI 容器解决依赖</h3><p>Laravel 等许多框架都是使用 Reflection 解决依赖注入问题，具体可查看 Laravel 源码进行分析。<br>下面我们代码简单实现一个 DI 容器演示 Reflection 解决依赖注入问题。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DI</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> $data = [];</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__set</span><span class="params">($k, $v)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">self</span>::$data[$k] = $v;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__get</span><span class="params">($k)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;bulid(<span class="keyword">self</span>::$data[$k]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取实例</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">bulid</span><span class="params">($className)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 如果是匿名函数，直接执行，并返回结果</span></span><br><span class="line">        <span class="keyword">if</span> ($className <span class="keyword">instanceof</span> Closure) &#123;</span><br><span class="line">            <span class="keyword">return</span> $className(<span class="keyword">$this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 已经是实例化对象的话，直接返回</span></span><br><span class="line">        <span class="keyword">if</span>(is_object($className)) &#123;</span><br><span class="line">            <span class="keyword">return</span> $className;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果是类的话，使用反射加载</span></span><br><span class="line">        $ref = <span class="keyword">new</span> ReflectionClass($className);</span><br><span class="line">        <span class="comment">// 监测类是否可实例化</span></span><br><span class="line">        <span class="keyword">if</span> (!$ref-&gt;isInstantiable()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'class'</span> . $className . <span class="string">' not find'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取构造函数</span></span><br><span class="line">        $construtor = $ref-&gt;getConstructor();</span><br><span class="line">        <span class="comment">// 无构造函数，直接实例化返回</span></span><br><span class="line">        <span class="keyword">if</span> (is_null($construtor)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> $className;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取构造函数参数</span></span><br><span class="line">        $params = $construtor-&gt;getParameters();</span><br><span class="line">        <span class="comment">// 解析构造函数</span></span><br><span class="line">        $dependencies = <span class="keyword">$this</span>-&gt;getDependecies($params);</span><br><span class="line">        <span class="comment">// 创建新实例</span></span><br><span class="line">        <span class="keyword">return</span> $ref-&gt;newInstanceArgs($dependencies);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 分析参数，如果参数中出现依赖类，递归实例化</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getDependecies</span><span class="params">($params)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $data = [];</span><br><span class="line">        <span class="keyword">foreach</span>($params <span class="keyword">as</span> $param)</span><br><span class="line">        &#123;</span><br><span class="line">            $tmp = $param-&gt;getClass();</span><br><span class="line">            <span class="keyword">if</span> (is_null($tmp)) &#123;</span><br><span class="line">                $data[] = <span class="keyword">$this</span>-&gt;setDefault($param);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                $data[] = <span class="keyword">$this</span>-&gt;bulid($tmp-&gt;name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $data;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 设置默认值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setDefault</span><span class="params">($param)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ($param-&gt;isDefaultValueAvailable()) &#123;</span><br><span class="line">            <span class="keyword">return</span> $param-&gt;getDefaultValue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'no default value!'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(Calc $calc)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> $calc-&gt;plus(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$di = <span class="keyword">new</span> DI();</span><br><span class="line">$di-&gt;calc = <span class="string">'Calc'</span>; <span class="comment">// 加载单元测试用例中 Calc 类</span></span><br><span class="line">$di-&gt;demo = <span class="string">'Demo'</span>;</span><br><span class="line">$di-&gt;demo;</span><br></pre></td></tr></table></figure></p>
+<p>注意上面的 calc 和 demo 的顺序，不能颠倒，不然的话会报错，原因是由于 Demo 依赖 Calc，首先要定义依赖关系。<br>在 Demo 实例化的时候，会用到 Calc 类，也就是说 Demo 依赖于 Calc，但是在 $data 上面找不到的话，会抛出错误，所以首先要定义 $di-&gt;calc = ‘Calc’。</p>
+<p>Reflection 是一个非常 Cool 的功能，使用它，但不要滥用它。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/29/Nginx与PHP-FPM/" rel="next" title="Nginx与PHP-FPM">
+                <i class="fa fa-chevron-left"></i> Nginx与PHP-FPM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/29/php实现守护进程/" rel="prev" title="php实现守护进程">
+                php实现守护进程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">haixin.z</p>
+              <div class="site-description motion-element" itemprop="description">胜利即是正义</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#反射介绍"><span class="nav-number">1.</span> <span class="nav-text">反射介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReflectionClass"><span class="nav-number">1.1.</span> <span class="nav-text">ReflectionClass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReflectionProperty"><span class="nav-number">1.2.</span> <span class="nav-text">ReflectionProperty</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RefleactionMethod-amp-ReflectionParameter"><span class="nav-number">1.3.</span> <span class="nav-text">RefleactionMethod &amp; ReflectionParameter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eflectionFunction-amp-ReflectionParameter"><span class="nav-number">1.4.</span> <span class="nav-text">eflectionFunction &amp; ReflectionParameter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#综合实例"><span class="nav-number">2.</span> <span class="nav-text">综合实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#情况一"><span class="nav-number">2.1.</span> <span class="nav-text">情况一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#情况二"><span class="nav-number">2.2.</span> <span class="nav-text">情况二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#情况三"><span class="nav-number">2.3.</span> <span class="nav-text">情况三</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP反射实际应用"><span class="nav-number">3.</span> <span class="nav-text">PHP反射实际应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动生成文档"><span class="nav-number">3.1.</span> <span class="nav-text">自动生成文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现-MVC-架构"><span class="nav-number">3.2.</span> <span class="nav-text">实现 MVC 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现单元测试"><span class="nav-number">3.3.</span> <span class="nav-text">实现单元测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配合-DI-容器解决依赖"><span class="nav-number">3.4.</span> <span class="nav-text">配合 DI 容器解决依赖</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">haixin.z</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

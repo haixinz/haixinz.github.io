@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.0',
+    sidebar: {"position":"right","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="第一种方式，借助 nohup 和 &amp;amp;  配合使用。在命令后面加上 &amp;amp; 符号， 可以让启动的进程转到后台运行，而不占用控制台，控制台还可以再运行其他命令，这里我使用一个while死循环来做演示，代码如下 1234while(true)&amp;#123;    echo time().PHP_EOL;    sleep(3);&amp;#125; 用 &amp;amp; 方式来启动该进程 1234567[r">
+<meta name="keywords" content="php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php实现守护进程">
+<meta property="og:url" content="http://yoursite.com/2016/12/29/php实现守护进程/index.html">
+<meta property="og:site_name" content="blackpink">
+<meta property="og:description" content="第一种方式，借助 nohup 和 &amp;amp;  配合使用。在命令后面加上 &amp;amp; 符号， 可以让启动的进程转到后台运行，而不占用控制台，控制台还可以再运行其他命令，这里我使用一个while死循环来做演示，代码如下 1234while(true)&amp;#123;    echo time().PHP_EOL;    sleep(3);&amp;#125; 用 &amp;amp; 方式来启动该进程 1234567[r">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-02T00:57:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php实现守护进程">
+<meta name="twitter:description" content="第一种方式，借助 nohup 和 &amp;amp;  配合使用。在命令后面加上 &amp;amp; 符号， 可以让启动的进程转到后台运行，而不占用控制台，控制台还可以再运行其他命令，这里我使用一个while死循环来做演示，代码如下 1234while(true)&amp;#123;    echo time().PHP_EOL;    sleep(3);&amp;#125; 用 &amp;amp; 方式来启动该进程 1234567[r">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2016/12/29/php实现守护进程/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>php实现守护进程 | blackpink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">blackpink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">唉.....</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/29/php实现守护进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="haixin.z">
+      <meta itemprop="description" content="胜利即是正义">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blackpink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php实现守护进程
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-12-29 16:00:01" itemprop="dateCreated datePublished" datetime="2016-12-29T16:00:01+00:00">2016-12-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-02 00:57:10" itemprop="dateModified" datetime="2019-04-02T00:57:10+00:00">2019-04-02</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="第一种方式，借助-nohup-和-amp-配合使用。"><a href="#第一种方式，借助-nohup-和-amp-配合使用。" class="headerlink" title="第一种方式，借助 nohup 和 &amp;  配合使用。"></a>第一种方式，借助 nohup 和 &amp;  配合使用。</h4><p>在命令后面加上 &amp; 符号， 可以让启动的进程转到后台运行，而不占用控制台，控制台还可以再运行其他命令，这里我使用一个while死循环来做演示，代码如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> time().PHP_EOL;</span><br><span class="line">    sleep(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用 &amp; 方式来启动该进程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost php]<span class="comment"># php deadloop.php &amp;</span></span><br><span class="line">[1] 3454</span><br><span class="line">[root@localhost php]<span class="comment"># ps aux | grep 3454</span></span><br><span class="line">root   3454 0.0 0.8 284544 8452 pts/0  T  18:06  0:00 php deadloop.php</span><br><span class="line">root   3456 0.0 0.0 103316  896 pts/0  S+  18:08  0:00 grep 3454</span><br><span class="line">[1]+ Stopped         php deadloop.php</span><br><span class="line">[root@localhost php]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>可以看到该进程并未占用控制台，控制台还可以运行其他命令，这时我们还可以通过 fg 命令让进程恢复到普通占用控制台的模式。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost php]<span class="comment"># fg</span></span><br><span class="line">php deadloop.php</span><br><span class="line">1470996682</span><br><span class="line">1470996685</span><br><span class="line">1470996688</span><br><span class="line">1470996691</span><br></pre></td></tr></table></figure></p>
+<p>以上就是关于 &amp; 命令简单介绍。</p>
+<p>下面再来看另一个命令 nohup</p>
+<p>在命令之前加上 nohup ，启动的进程将会忽略linux的挂起信号 (SIGHUP)，那什么情况下会触发linux下SIGHUP信号呢，以下内容摘自百度百科：</p>
+<p>SIGHUP会在以下3种情况下被发送给相应的进程：</p>
+<p>1、终端关闭时，该信号被发送到session首进程以及作为job提交的进程（即用 &amp; 符号提交的进程）<br>2、session首进程退出时，该信号被发送到该session中的前台进程组中的每一个进程<br>3、若父进程退出导致进程组成为孤儿进程组，且该进程组中有进程处于停止状态（收到SIGSTOP或SIGTSTP信号），该信号会被发送到该进程组中的每一个进程。</p>
+<p>结合 1和2 我们知道，不管是否以 &amp; (job方式)启动的进程，关闭终端时都会收到  SIGHUP 信号 ，那么进程收到 SIGHUP 信号会如何处理呢，看同样是摘自百度百科的一句话</p>
+<p>系统对SIGHUP信号的默认处理是终止收到该信号的进程。所以若程序中没有捕捉该信号，当收到该信号时，进程就会退出。</p>
+<p>也就是说关闭终端进程会收到SIGHUP信号，而该信号的默认处理方式就是结束掉该进程，当然 我们也可以自己处理该信号，或者忽略它，同样是上述循环的例子，我们稍加改进<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">declare</span>(ticks = <span class="number">1</span>);</span><br><span class="line">pcntl_signal(SIGHUP, <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 这地方处理信号的方式我们只是简单的写入一句日志到文件中</span></span><br><span class="line">    file_put_contents(<span class="string">'logs.txt'</span>, <span class="string">'pid : '</span> . posix_getpid() . <span class="string">' receive SIGHUP 信号'</span> . PHP_EOL);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> time().PHP_EOL;</span><br><span class="line">    sleep(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们大可不必这么麻烦，只需要使用linux提供给我们的nohup命令，但我们使用nohup启动进程时，关闭终端，进程会忽略SIGHUP信号，也就不会退出了，首先去掉刚才的信号处理代码。然后nohup 运行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost php]<span class="comment"># nohup php deadloop.php</span></span><br></pre></td></tr></table></figure>
+<p>nohup: 忽略输入并把输出追加到”nohup.out”</p>
+<p>并且nohup默认会把程序的输出重定向到当前目录下的nohup.out文件，如果没有可写权限，则写入 $homepath/nohup.out<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost php]<span class="comment"># ls</span></span><br><span class="line">cmd.sh deadloop.php getPhoto.php nohup.out pics</span><br><span class="line">[root@localhost php]<span class="comment"># tail -f nohup.out</span></span><br><span class="line">1470999772</span><br><span class="line">1470999775</span><br><span class="line">1470999778</span><br><span class="line">1470999781</span><br><span class="line">1470999784</span><br><span class="line">1470999787</span><br><span class="line">1470999790</span><br><span class="line">1470999793</span><br><span class="line">1470999796</span><br><span class="line">1470999799</span><br><span class="line">1470999802</span><br></pre></td></tr></table></figure></p>
+<p>此时 关闭终端，进程不会结束，而是变成了孤儿进程（ppid=1），因为创建它的父进程退出了。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># ps -ef | grep 3554</span></span><br><span class="line">root   3554 3497 0 19:09 pts/0  00:00:00 php deadloop.php</span><br><span class="line">root   3575 3557 0 19:10 pts/1  00:00:00 grep 3554</span><br><span class="line">[root@localhost ~]<span class="comment"># ps -ef | grep 3554</span></span><br><span class="line">root   3554   1 0 19:09 ?    00:00:00 php deadloop.php</span><br><span class="line">root   3577 3557 0 19:10 pts/1  00:00:00 grep 3554</span><br><span class="line">[root@localhost ~]<span class="comment">#</span></span><br></pre></td></tr></table></figure></p>
+<p>结论： 所以当我们组合 nohup 和 &amp; 两种方式时，启动的进程不会占用控制台，也不依赖控制台，控制台关闭之后进程被1号进程收养，成为孤儿进程，这就和守护进程的机制非常类似了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost php]<span class="comment"># nohup php deadloop.php &gt;logs.txt 2&gt;error.txt &amp;</span></span><br><span class="line">[1] 3612</span><br><span class="line">[root@localhost php]<span class="comment"># ps -ef |grep 3612</span></span><br><span class="line">root   3612 3557 0 19:18 pts/1  00:00:00 php deadloop.php</span><br><span class="line">root   3617 3557 0 19:19 pts/1  00:00:00 grep 3612</span><br><span class="line">[root@localhost php]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>其中 &gt;logs.txt 重定向标准输出，2&gt;error.txt 重定向标准错误输出。</p>
+<h4 id="第二种实现方式就是根据守护进程的规则和特点通过代码来实现"><a href="#第二种实现方式就是根据守护进程的规则和特点通过代码来实现" class="headerlink" title="第二种实现方式就是根据守护进程的规则和特点通过代码来实现"></a>第二种实现方式就是根据守护进程的规则和特点通过代码来实现</h4><p>守护进程最大的特点就是脱离了用户终端和会话，下面是实现的代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$pid = pcntl_fork();</span><br><span class="line"><span class="keyword">if</span> ($pid == <span class="number">-1</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'fork子进程失败'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">elseif</span> ($pid &gt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">//父进程退出,子进程变成孤儿进程被1号进程收养，进程脱离终端</span></span><br><span class="line">  <span class="keyword">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 最重要的一步，让该进程脱离之前的会话，终端，进程组的控制</span></span><br><span class="line">posix_setsid();</span><br><span class="line"><span class="comment">// 修改当前进程的工作目录，由于子进程会继承父进程的工作目录，修改工作目录以释放对父进程工作目录的占用。</span></span><br><span class="line">chdir(<span class="string">'/'</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 通过上一步，我们创建了一个新的会话组长，进程组长，且脱离了终端，但是会话组长可以申请重新打开一个终端，为了避免</span></span><br><span class="line"><span class="comment"> * 这种情况，我们再次创建一个子进程，并退出当前进程，这样运行的进程就不再是会话组长。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">$pid = pcntl_fork();</span><br><span class="line"><span class="keyword">if</span> ($pid == <span class="number">-1</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'fork子进程失败'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">elseif</span> ($pid &gt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// 再一次退出父进程，子进程成为最终的守护进程</span></span><br><span class="line">  <span class="keyword">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 由于守护进程用不到标准输入输出，关闭标准输入，输出，错误输出描述符</span></span><br><span class="line">fclose(STDIN);</span><br><span class="line">fclose(STDOUT);</span><br><span class="line">fclose(STDERR);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 处理业务代码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">TRUE</span>)</span><br><span class="line">&#123;</span><br><span class="line">  file_put_contents(<span class="string">'log.txt'</span>, time().PHP_EOL, FILE_APPEND);</span><br><span class="line">  sleep(<span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/29/php-reflection/" rel="next" title="PHP反射">
+                <i class="fa fa-chevron-left"></i> PHP反射
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/31/智慧医疗事业部技术分享-docker搭建lnmp环境/" rel="prev" title="智慧医疗事业部技术分享-docker搭建lnmp环境">
+                智慧医疗事业部技术分享-docker搭建lnmp环境 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">haixin.z</p>
+              <div class="site-description motion-element" itemprop="description">胜利即是正义</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一种方式，借助-nohup-和-amp-配合使用。"><span class="nav-number">1.</span> <span class="nav-text">第一种方式，借助 nohup 和 &amp;  配合使用。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二种实现方式就是根据守护进程的规则和特点通过代码来实现"><span class="nav-number">2.</span> <span class="nav-text">第二种实现方式就是根据守护进程的规则和特点通过代码来实现</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">haixin.z</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
